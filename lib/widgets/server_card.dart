@@ -37,7 +37,7 @@ class ServerCard extends StatelessWidget {
             child: Row(
               children: [
                 Text(
-                  server.getFlag(),
+                  server.flag,
                   style: const TextStyle(fontSize: 36),
                 ),
                 const SizedBox(width: 16),

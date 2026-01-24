@@ -1,24 +1,9 @@
-import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/vpn_server.dart';
 
 class StorageService {
-  static const String _selectedServerKey = 'selected_server';
   static const String _sessionIdKey = 'session_id';
-
-  static Future<void> saveSelectedServer(VPNServer server) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_selectedServerKey, json.encode(server.toJson()));
-  }
-
-  static Future<VPNServer?> getSelectedServer() async {
-    final prefs = await SharedPreferences.getInstance();
-    final serverJson = prefs.getString(_selectedServerKey);
-    if (serverJson != null) {
-      return VPNServer.fromJson(json.decode(serverJson));
-    }
-    return null;
-  }
+  static const String _serverCodeKey = 'server_code';
+  static const String _vpnConfigKey = 'vpn_config';
 
   static Future<void> saveSessionId(String sessionId) async {
     final prefs = await SharedPreferences.getInstance();
@@ -30,13 +15,30 @@ class StorageService {
     return prefs.getString(_sessionIdKey);
   }
 
+  static Future<void> saveServerCode(String serverCode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_serverCodeKey, serverCode);
+  }
+
+  static Future<String?> getServerCode() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_serverCodeKey);
+  }
+
+  static Future<void> saveVPNConfig(String config) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_vpnConfigKey, config);
+  }
+
+  static Future<String?> getVPNConfig() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_vpnConfigKey);
+  }
+
   static Future<void> clearSession() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_sessionIdKey);
-  }
-
-  static Future<void> clearAll() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+    await prefs.remove(_serverCodeKey);
+    await prefs.remove(_vpnConfigKey);
   }
 }

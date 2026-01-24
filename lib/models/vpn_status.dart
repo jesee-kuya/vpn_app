@@ -1,28 +1,43 @@
+enum VPNConnectionStatus {
+  disconnected,
+  connecting,
+  connected,
+  disconnecting,
+  error,
+}
+
 class VPNStatus {
-  final bool connected;
-  final String server;
+  final bool isConnected;
+  final VPNConnectionStatus status;
+  final String? error;
+  final String? ip;
   final int duration;
-  final String ip;
+  final String? server;
 
   VPNStatus({
-    required this.connected,
-    required this.server,
+    required this.isConnected,
+    required this.status,
     required this.duration,
-    required this.ip,
+    this.error,
+    this.server,
+    this.ip,
   });
 
   factory VPNStatus.fromJson(Map<String, dynamic> json) {
     return VPNStatus(
-      connected: json['connected'] as bool,
-      server: json['server'] as String,
-      duration: json['duration'] as int,
-      ip: json['ip'] as String,
+      isConnected: json['connected'] as bool? ?? false,
+      server: json['server'] as String?,
+      duration: json['duration'] as int? ?? 0,
+      ip: json['ip'] as String?,
+      status: (json['connected'] as bool? ?? false)
+          ? VPNConnectionStatus.connected
+          : VPNConnectionStatus.disconnected,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'connected': connected,
+      'connected': isConnected,
       'server': server,
       'duration': duration,
       'ip': ip,

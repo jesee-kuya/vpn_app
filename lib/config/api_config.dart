@@ -1,6 +1,6 @@
 class ApiConfig {
   // Change this to your actual API URL
-  static const String baseUrl = 'http://84.247.175.194:8080';
+  static const String baseUrl = 'http://localhost:8000';
   
   // API Endpoints
   static const String serversEndpoint = '/api/servers';

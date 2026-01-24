@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/vpn_server.dart';
 import '../services/api_service.dart';
-import '../services/storage_service.dart';
 import '../widgets/server_card.dart';
 import 'landing_screen.dart';
 import 'connection_screen.dart';
@@ -67,7 +66,6 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
 
   Future<void> _selectServer(VPNServer server) async {
     try {
-      await StorageService.saveSelectedServer(server);
       await ApiService.selectServer(server.code);
       if (mounted) {
         Navigator.push(
@@ -96,21 +94,6 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        title: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          decoration: BoxDecoration(
-            color: const Color(0xFFFF6B35),
-            borderRadius: BorderRadius.circular(24),
-          ),
-          child: const Text(
-            'Return to Home',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.white,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Color(0xFF2D3142)),
           onPressed: () => Navigator.pushReplacement(

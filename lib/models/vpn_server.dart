@@ -1,19 +1,27 @@
+// lib/models/vpn_server.dart
 class VPNServer {
   final String code;
   final String name;
   final String ip;
+  final String flag;
 
   VPNServer({
     required this.code,
     required this.name,
     required this.ip,
+    required this.flag,
   });
 
   factory VPNServer.fromJson(Map<String, dynamic> json) {
+    // Handle backend responses that might be missing fields
+    final code = json['code'] as String? ?? json['countryCode'] as String? ?? '';
+    final name = json['name'] as String? ?? '';
+    
     return VPNServer(
-      code: json['code'] as String,
-      name: json['name'] as String,
-      ip: json['ip'] as String,
+      code: code,
+      name: name,
+      ip: json['ip'] as String? ?? '',
+      flag: json['flag'] as String? ?? _getFlagEmoji(code),
     );
   }
 
@@ -22,24 +30,28 @@ class VPNServer {
       'code': code,
       'name': name,
       'ip': ip,
+      'flag': flag,
     };
   }
 
-  String getFlag() {
-    const flags = {
-      'KE': '🇰🇪',
-      'US': '🇺🇸',
-      'FR': '🇫🇷',
-      'GB': '🇬🇧',
-      'DE': '🇩🇪',
-      'IT': '🇮🇹',
-      'SE': '🇸🇪',
-      'FI': '🇫🇮',
-      'NL': '🇳🇱',
-      'CA': '🇨🇦',
-      'JP': '🇯🇵',
-      'AU': '🇦🇺',
-    };
-    return flags[code] ?? '🌍';
+  // Helper to get flag emoji from country code
+  static String _getFlagEmoji(String countryCode) {
+    switch (countryCode.toUpperCase()) {
+      case 'KE':
+        return '🇰🇪';
+      case 'US':
+        return '🇺🇸';
+      case 'UK':
+      case 'GB':
+        return '🇬🇧';
+      case 'DE':
+        return '🇩🇪';
+      case 'SG':
+        return '🇸🇬';
+      case 'JP':
+        return '🇯🇵';
+      default:
+        return '🌍';
+    }
   }
 }
