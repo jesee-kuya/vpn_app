@@ -48,7 +48,7 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/images/app_icon.png"
-  adaptive_icon_background: "#2D3142" # Use your app's primary color
+  adaptive_icon_background: "#0175C2" # Use your app's primary color
   adaptive_icon_foreground: "assets/images/app_icon_foreground.png"
 
   # The "flutter_lints" package below contains a set of recommended lints to
