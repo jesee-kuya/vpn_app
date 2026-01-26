@@ -99,70 +99,103 @@ class _ConnectionScreenState extends State<ConnectionScreen>
   }
 
   Future<void> _connect() async {
-    if (_isConnecting || _isConnected) return;
+  if (_isConnecting || _isConnected) return;
 
-    setState(() => _isConnecting = true);
+  setState(() => _isConnecting = true);
 
-    try {
-      // Step 1: Get VPN configuration from backend
-      final session = await ApiService.connect(widget.server.code);
-      
-      // Step 2: Establish actual VPN tunnel using WireGuard
-      final vpnConnected = await _vpnService.connectToVPN(
-        session.config,
-        'p2nova_${session.sessionId}',
-      );
+  try {
+    debugPrint('═══════════════════════════════════════');
+    debugPrint('🔌 Starting VPN Connection Process');
+    debugPrint('Server: ${widget.server.name} (${widget.server.code})');
+    debugPrint('═══════════════════════════════════════');
+    
+    // Step 1: Get VPN configuration from backend
+    debugPrint('📡 Step 1: Requesting config from backend...');
+    final session = await ApiService.connect(widget.server.code);
+    debugPrint('✅ Step 1 Complete: Session ID: ${session.sessionId}');
+    debugPrint('   IP: ${session.ip}');
+    
+    // Step 2: Establish actual VPN tunnel using WireGuard
+    debugPrint('🔐 Step 2: Establishing VPN tunnel...');
+    final vpnConnected = await _vpnService.connectToVPN(
+      session.config,
+      'p2nova_${session.sessionId}',
+    );
 
-      // Fixed: Logic was inverted - should throw if NOT connected
-      if (!vpnConnected) {
-        throw Exception('Failed to establish VPN tunnel');
-      }
-
-      // Step 3: Save session and update UI
-      await StorageService.saveSessionId(session.sessionId);
-      await StorageService.saveServerCode(widget.server.code);
-      await StorageService.saveVPNConfig(session.config);
-
-      if (mounted) {
-        setState(() {
-          _sessionId = session.sessionId;
-          _connectedIP = session.ip;
-          _isConnected = true;
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Connected to ${widget.server.name}!'),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
-    } catch (e) {
-      debugPrint('Connection error: $e');
-      
-      // Cleanup on failure
-      if (_sessionId != null) {
-        try {
-          await ApiService.disconnect(_sessionId!);
-        } catch (_) {}
-      }
-      await _vpnService.disconnect();
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to connect: ${e.toString()}'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isConnecting = false);
+    if (!vpnConnected) {
+      throw Exception('VPN tunnel establishment failed');
     }
-  }
+    
+    debugPrint('✅ Step 2 Complete: VPN tunnel established');
 
+    // Step 3: Save session and update UI
+    debugPrint('💾 Step 3: Saving session data...');
+    await StorageService.saveSessionId(session.sessionId);
+    await StorageService.saveServerCode(widget.server.code);
+    await StorageService.saveVPNConfig(session.config);
+
+    if (mounted) {
+      setState(() {
+        _sessionId = session.sessionId;
+        _connectedIP = session.ip;
+        _isConnected = true;
+      });
+
+      debugPrint('✅ Step 3 Complete: Session saved');
+      debugPrint('═══════════════════════════════════════');
+      debugPrint('🎉 VPN CONNECTION SUCCESSFUL!');
+      debugPrint('═══════════════════════════════════════');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('✓ Connected to ${widget.server.name}!'),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  } catch (e) {
+    debugPrint('═══════════════════════════════════════');
+    debugPrint('❌ VPN CONNECTION FAILED');
+    debugPrint('Error: $e');
+    debugPrint('═══════════════════════════════════════');
+    
+    // Cleanup on failure
+    if (_sessionId != null) {
+      try {
+        await ApiService.disconnect(_sessionId!);
+      } catch (_) {}
+    }
+    await _vpnService.disconnect();
+    
+    if (mounted) {
+      // User-friendly error messages
+      String errorMessage = 'Connection failed';
+      if (e.toString().contains('permission')) {
+        errorMessage = 'VPN permission required. Please grant permission and try again.';
+      } else if (e.toString().contains('Invalid')) {
+        errorMessage = 'Server configuration error. Please try a different server.';
+      } else if (e.toString().contains('timeout')) {
+        errorMessage = 'Connection timeout. Please check your internet.';
+      }
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 4),
+          action: SnackBarAction(
+            label: 'Retry',
+            textColor: Colors.white,
+            onPressed: _connect,
+          ),
+        ),
+      );
+    }
+  } finally {
+    if (mounted) setState(() => _isConnecting = false);
+  }
+}
   Future<void> _disconnect() async {
     if (!_isConnected) return;
 
