@@ -50,6 +50,8 @@ class VPNServer {
         return '🇸🇬';
       case 'JP':
         return '🇯🇵';
+      case 'FR':
+        return '🇫🇷';
       default:
         return '🌍';
     }
