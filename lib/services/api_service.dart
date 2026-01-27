@@ -6,7 +6,7 @@ import '../models/vpn_server.dart';
 import '../models/vpn_session.dart';
 import '../models/speed_metrics.dart';
 import '../models/vpn_status.dart';
-
+import 'package:flutter/foundation.dart';
 /*
 ===========================================
 API DOCUMENTATION
@@ -84,27 +84,50 @@ static Future<List<VPNServer>> getServers() async {
   }
 
   // 3. POST /api/vpn/connect
-  static Future<VPNSession> connect(String serverCode) async {
-    try {
-      final response = await http
-          .post(
-            Uri.parse('${ApiConfig.baseUrl}${ApiConfig.connectEndpoint}'),
-            headers: await _getHeaders(),
-            body: json.encode({'serverCode': serverCode}),
-          )
-          .timeout(ApiConfig.connectTimeout);
+// 3. POST /api/vpn/connect
+static Future<VPNSession> connect(String serverCode) async {
+  try {
+    final url = '${ApiConfig.baseUrl}${ApiConfig.connectEndpoint}';
+    debugPrint('📡 Connecting to: $url');
+    debugPrint('📤 Request body: {"serverCode": "$serverCode"}');
+    
+    final response = await http
+        .post(
+          Uri.parse(url),
+          headers: await _getHeaders(),
+          body: json.encode({'serverCode': serverCode}),
+        )
+        .timeout(ApiConfig.connectTimeout);
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+    debugPrint('📥 Response status: ${response.statusCode}');
+    debugPrint('📥 Response body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body) as Map<String, dynamic>;
+      
+      debugPrint('🔍 Decoded response: $responseData');
+      
+      // Extract the 'data' field from the response
+      if (responseData['success'] == true && responseData['data'] != null) {
+        final data = responseData['data'] as Map<String, dynamic>;
+        
+        debugPrint('🔍 Data field: $data');
+        debugPrint('🔍 Config present: ${data['config'] != null}');
+        debugPrint('🔍 SessionId present: ${data['sessionId'] != null}');
+        debugPrint('🔍 IP present: ${data['ip'] != null}');
+        
         return VPNSession.fromJson(data);
       } else {
-        throw Exception('Connection failed: ${response.statusCode}');
+        throw Exception('Invalid response format: missing success or data field');
       }
-    } catch (e) {
-      throw Exception('Failed to connect: $e');
+    } else {
+      throw Exception('Connection failed: ${response.statusCode}');
     }
+  } catch (e) {
+    debugPrint('❌ Connect error: $e');
+    throw Exception('Failed to connect: $e');
   }
-
+}
   // 4. POST /api/vpn/disconnect
   static Future<bool> disconnect(String sessionId) async {
     try {
