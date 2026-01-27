@@ -25,6 +25,7 @@ class VPNSession {
       'sessionId': sessionId,
       'ip': ip,
       'startTime': startTime,
+      'config': config,
     };
   }
 }
