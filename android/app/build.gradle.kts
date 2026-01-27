@@ -32,15 +32,18 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
-
-            signingConfig signingConfigs.debug
-
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            // Kotlin DSL requires '=' and 'is' prefixes for these properties
+            isMinifyEnabled = true
+            isShrinkResources = true
+            
+            // Correct way to reference the debug signing config in Kotlin
             signingConfig = signingConfigs.getByName("debug")
+            
+            // Use double quotes (") instead of single quotes (')
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 }
