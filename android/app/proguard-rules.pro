@@ -11,3 +11,17 @@
 -keep class com.wireguard.crypto.** { *; }
 -keep class com.wireguard.util.** { *; }
 -keep class * extends android.net.VpnService { *; }
+
+# Flutter specific
+-keep class io.flutter.app.** { *; }
+-keep class io.flutter.plugin.** { *; }
+-keep class io.flutter.util.** { *; }
+-keep class io.flutter.view.** { *; }
+-keep class io.flutter.** { *; }
+-keep class io.flutter.plugins.** { *; }
+
+# If you use MethodChannels to talk to native code
+-keepattributes EnclosingMethod
+-keepattributes InnerClasses
+-keepattributes Signature
+-keepattributes *Annotation*
