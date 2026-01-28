@@ -32,15 +32,15 @@ android {
 
     buildTypes {
         release {
-            // Kotlin DSL requires '=' and 'is' prefixes for these properties
-            isMinifyEnabled = true
-            isShrinkResources = true
+            // Change these both to false temporarily
+            isMinifyEnabled = false 
+            isShrinkResources = false
             
-            // Correct way to reference the debug signing config in Kotlin
             signingConfig = signingConfigs.getByName("debug")
-            
-            // Use double quotes (") instead of single quotes (')
-           
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 }
