@@ -13,6 +13,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -28,6 +29,15 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        ndk {
+            // Explicitly include the architectures you need
+            // 'armeabi-v7a' is for older phones, 'arm64-v8a' is for newer phones
+            // 'x86_64' is for the Emulator
+            abiFilters.add("armeabi-v7a")
+            abiFilters.add("arm64-v8a")
+            abiFilters.add("x86_64")
+        }
     }
 
     buildTypes {
@@ -47,4 +57,14 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    // Add standard Android core libraries
+    implementation("androidx.core:core-ktx:1.12.0")
+    
+    // REQUIRED: The actual WireGuard native library
+    // Use the version matching your Flutter plugin or the latest stable
+    implementation("com.wireguard.android:tunnel:1.0.20230706")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4") 
 }
