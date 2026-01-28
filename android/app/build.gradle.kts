@@ -40,10 +40,7 @@ android {
             signingConfig = signingConfigs.getByName("debug")
             
             // Use double quotes (") instead of single quotes (')
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+           
         }
     }
 }
