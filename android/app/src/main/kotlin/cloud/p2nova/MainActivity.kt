@@ -1,4 +1,4 @@
-package com.example.p2novavpn
+package cloud.p2nova
 
 import io.flutter.embedding.android.FlutterActivity
 
