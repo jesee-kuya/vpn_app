@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:wireguard_flutter/wireguard_flutter.dart';
 import 'package:p2novavpn/services/vpn_connection_service.dart';
 import 'package:p2novavpn/widgets/vpn_ui_helpers.dart';
+import 'package:p2novavpn/utils/vpn_config_diagnostics.dart';
 import '../models/vpn_server.dart';
 import '../models/speed_metrics.dart';
 import '../services/api_service.dart';
@@ -160,6 +161,8 @@ class _ConnectionScreenState extends State<ConnectionScreen>
       final session = await ApiService.connect(widget.server.code);
       debugPrint('✅ Step 2 Complete: Session ID: ${session.sessionId}');
       debugPrint('   IP: ${session.ip}');
+      
+      VpnConfigDiagnostics.analyzeConfig(session.config);
       
       // Step 3: Establish actual VPN tunnel using WireGuard
       debugPrint('🔐 Step 3: Establishing VPN tunnel...');
