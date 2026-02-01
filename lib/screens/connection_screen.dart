@@ -217,16 +217,19 @@ class _ConnectionScreenState extends State<ConnectionScreen>
       
       
       String vpnConfig = session.config;
-      if (!vpnConfig.endsWith('\n')) {
-        vpnConfig += '\n';
-      }
+
+      vpnConfig = vpnConfig.replaceAll('\\n', '\n');
+
+      vpnConfig = vpnConfig.trim() + '\n';
 
       _showConfigDebug(vpnConfig);
       
 
+      // In ConnectionScreen
+      final cleanSessionId = session.sessionId.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
       final result = await _vpnService.connectToVPN(
-        vpnConfig,  // Use fixed config
-        'p2nova_${session.sessionId}',
+        vpnConfig, 
+        'p2nova$cleanSessionId', 
       );
 
       // Close connecting dialog
@@ -234,7 +237,6 @@ class _ConnectionScreenState extends State<ConnectionScreen>
         Navigator.pop(context);
       }
 
-      _showConfigDebug(vpnConfig);
 
       // Step 4: Handle connection result
       if (!result.success) {
