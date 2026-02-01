@@ -163,22 +163,23 @@ class _ConnectionScreenState extends State<ConnectionScreen>
       debugPrint('   IP: ${session.ip}');
 
       VpnConfigDiagnostics.analyzeConfig(session.config);
-
-      if (mounted) {
-        VpnConfigDiagnostics.showDiagnosticDialog(
-        context,
-        session.config,
-        );
-      }
       
       // Step 3: Establish actual VPN tunnel using WireGuard
       debugPrint('🔐 Step 3: Establishing VPN tunnel...');
       debugPrint('   This will trigger Android VPN permission dialog if needed');
       
-      final result = await _vpnService.connectToVPN(
-        session.config,
-        'p2nova_${session.sessionId}',
-      );
+      
+    String vpnConfig = session.config;
+    if (vpnConfig.contains('\\n')) {
+      vpnConfig = vpnConfig.replaceAll('\\n', '\n');
+    }
+
+    VpnConfigDiagnostics.analyzeConfig(vpnConfig);
+
+    final result = await _vpnService.connectToVPN(
+      vpnConfig,  // Use fixed config
+      'p2nova_${session.sessionId}',
+    );
 
       // Close connecting dialog
       if (mounted) {
