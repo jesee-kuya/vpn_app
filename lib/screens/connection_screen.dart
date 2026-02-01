@@ -51,6 +51,53 @@ class _ConnectionScreenState extends State<ConnectionScreen>
     super.dispose();
   }
 
+  void _showConfigDebug(String config) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.black,
+    builder: (context) {
+      return SafeArea(
+        child: Container(
+          height: MediaQuery.of(context).size.height * 0.85,
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'WireGuard Config (DEBUG)',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: SelectableText(
+                    config,
+                    style: const TextStyle(
+                      color: Colors.greenAccent,
+                      fontSize: 13,
+                      fontFamily: 'monospace',
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Close'),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
   Future<void> _initializeVpn() async {
     // Set up stage change listener for real-time UI updates
     _vpnService.onStageChanged = (stage) {
@@ -169,17 +216,18 @@ class _ConnectionScreenState extends State<ConnectionScreen>
       debugPrint('   This will trigger Android VPN permission dialog if needed');
       
       
-    String vpnConfig = session.config;
-    if (vpnConfig.contains('\\n')) {
-      vpnConfig = vpnConfig.replaceAll('\\n', '\n');
-    }
+      String vpnConfig = session.config;
+      if (!vpnConfig.endsWith('\n')) {
+        vpnConfig += '\n';
+      }
 
-    VpnConfigDiagnostics.analyzeConfig(vpnConfig);
+      _showConfigDebug(vpnConfig);
+      
 
-    final result = await _vpnService.connectToVPN(
-      vpnConfig,  // Use fixed config
-      'p2nova_${session.sessionId}',
-    );
+      final result = await _vpnService.connectToVPN(
+        vpnConfig,  // Use fixed config
+        'p2nova_${session.sessionId}',
+      );
 
       // Close connecting dialog
       if (mounted) {
