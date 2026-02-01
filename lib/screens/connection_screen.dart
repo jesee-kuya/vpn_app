@@ -234,6 +234,8 @@ class _ConnectionScreenState extends State<ConnectionScreen>
         Navigator.pop(context);
       }
 
+      _showConfigDebug(vpnConfig);
+
       // Step 4: Handle connection result
       if (!result.success) {
         debugPrint('❌ Step 3 Failed: ${result.errorMessage}');
