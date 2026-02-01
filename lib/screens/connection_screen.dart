@@ -161,8 +161,15 @@ class _ConnectionScreenState extends State<ConnectionScreen>
       final session = await ApiService.connect(widget.server.code);
       debugPrint('✅ Step 2 Complete: Session ID: ${session.sessionId}');
       debugPrint('   IP: ${session.ip}');
-      
+
       VpnConfigDiagnostics.analyzeConfig(session.config);
+
+      if (mounted) {
+        VpnConfigDiagnostics.showDiagnosticDialog(
+        context,
+        session.config,
+        );
+      }
       
       // Step 3: Establish actual VPN tunnel using WireGuard
       debugPrint('🔐 Step 3: Establishing VPN tunnel...');
