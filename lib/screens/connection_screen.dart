@@ -161,7 +161,7 @@ class _ConnectionScreenState extends State<ConnectionScreen>
       vpnConfig = vpnConfig.trim() + '\n';
       
       // Create tunnel name (clean, no hyphens)
-      final tunnelName = 'p2nova_${widget.server.code}_${DateTime.now().millisecondsSinceEpoch}';
+      final tunnelName = 'p2nova_${widget.server.code}';
       
       // Step 4: Establish VPN tunnel
       final result = await _vpnService.connectToVPN(vpnConfig, tunnelName);
