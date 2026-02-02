@@ -225,11 +225,10 @@ class _ConnectionScreenState extends State<ConnectionScreen>
       _showConfigDebug(vpnConfig);
       
 
-      // In ConnectionScreen
-      final cleanSessionId = session.sessionId.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+      
       final result = await _vpnService.connectToVPN(
         vpnConfig, 
-        'p2nova$cleanSessionId', 
+        'p2nova_${widget.server.code}', 
       );
 
       // Close connecting dialog
