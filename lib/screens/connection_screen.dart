@@ -101,16 +101,17 @@ class _ConnectionScreenState extends State<ConnectionScreen>
         final isConnected = _currentStage == VpnStage.connected;
         if (mounted && status.isConnected != isConnected) {
           // Backend and local state mismatch - sync them
-          if (!status.isConnected && isConnected) {
-            await _vpnService.disconnect();
-            await StorageService.clearSession();
-            setState(() {
-              _currentStage = VpnStage.disconnected;
-              _sessionId = null;
-              _connectedIP = null;
-              _speedMetrics = null;
-            });
-          }
+          // if (!status.isConnected && isConnected) {
+          //   await _vpnService.disconnect();
+          //   await StorageService.clearSession();
+          //   setState(() {
+          //     _currentStage = VpnStage.disconnected;
+          //     _sessionId = null;
+          //     _connectedIP = null;
+          //     _speedMetrics = null;
+          //   });
+          // }
+          debugPrint('Backend session out of sync. Not forcing disconnect.');
         }
       } catch (_) {}
     });
